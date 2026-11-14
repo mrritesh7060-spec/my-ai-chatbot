@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Personal AI</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #101827;
+  color: white;
+}
+header {
+  background: #172338;
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+}
+#chat {
+  padding: 15px;
+  height: 65vh;
+  overflow-y: auto;
+}
+.msg {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 12px;
+  background: #263750;
+  white-space: pre-wrap;
+}
+.user { background: #245b80; }
+footer {
+  display: flex;
+  padding: 12px;
+  gap: 8px;
+}
+input {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  border: 0;
+}
+button {
+  padding: 14px;
+  background: #16a085;
+  color: white;
+  border: 0;
+  border-radius: 10px;
+}
+</style>
+</head>
+<body>
+<header>🤖 My Personal AI</header>
+<div id="chat">
+<div class="msg">नमस्ते! मैं आपका AI हूँ। मुझसे कुछ भी पूछिए।</div>
+</div>
+<footer>
+<input id="question" placeholder="अपना सवाल लिखें...">
+<button onclick="send()">भेजें</button>
+</footer>
+<script>
+async function send() {
+ const input = document.getElementById("question");
+ const chat = document.getElementById("chat");
+ const question = input.value.trim();
+ if (!question) return;
+
+ chat.innerHTML += '<div class="msg user"></div>';
+ chat.lastElementChild.textContent = question;
+ input.value = "";
+
+ const reply = document.createElement("div");
+ reply.className = "msg";
+ reply.textContent = "जवाब तैयार हो रहा है...";
+ chat.appendChild(reply);
+
+ try {
+  const response = await fetch("/api/chat", {
+   method: "POST",
+   headers: {"Content-Type":"application/json"},
+   body: JSON.stringify({message: question})
+  });
+  const data = await response.json();
+  reply.textContent = data.reply || data.error || "जवाब नहीं मिला।";
+ } catch(e) {
+  reply.textContent = "सर्वर से कनेक्शन नहीं हो पाया।";
+ }
+ chat.scrollTop = chat.scrollHeight;
+}
+</script>
+</body>
+</html>
