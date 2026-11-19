@@ -3,8 +3,12 @@ import express from "express";
 import { GoogleGenAI } from "@google/genai";
 
 const app = express();
+
 app.use(express.json());
-app.use(express.static("public"));
+
+app.get("/", (req, res) => {
+  res.sendFile(process.cwd() + "/index.html");
+});
 
 app.post("/api/chat", async (req, res) => {
   try {
@@ -18,7 +22,9 @@ app.post("/api/chat", async (req, res) => {
     });
 
     res.json({ reply: response.text });
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "AI जवाब नहीं दे पाया।" });
   }
 });
